@@ -11,7 +11,7 @@ DBNAME = 'testdb'
 
 
 app = Flask(__name__)
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///students.sqlite3'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///evaluations.sqlite3'
 app.config['SQLALCHEMY_DATABASE_URI'] = \
     'postgresql+psycopg2://{user}:{passwd}@{host}:{port}/{db}'.format(
         user=DBUSER,
@@ -26,24 +26,21 @@ app.secret_key = 'foobarbaz'
 db = SQLAlchemy(app)
 
 
-class students(db.Model):
+class evaluations(db.Model):
     id = db.Column('student_id', db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    city = db.Column(db.String(50))
-    addr = db.Column(db.String(200))
+    value = db.Column(db.String(500))
 
-    def __init__(self, name, city, addr):
+    def __init__(self, name, value):
         self.name = name
-        self.city = city
-        self.addr = addr
+        self.value = value
 
 
 def database_initialization_sequence():
     db.create_all()
-    test_rec = students(
-            'John Doe',
-            'Los Angeles',
-            '123 Foobar Ave')
+    test_rec = evaluations(
+            'Initial test of json',
+            '{}')
 
     db.session.add(test_rec)
     db.session.rollback()
@@ -52,20 +49,21 @@ def database_initialization_sequence():
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
+    """
     if request.method == 'POST':
-        if not request.form['name'] or not request.form['city'] or not request.form['addr']:
+        if not request.form['name'] or not request.form['value']:
             flash('Please enter all the fields', 'error')
         else:
-            student = students(
+            student = evaluations(
                     request.form['name'],
-                    request.form['city'],
-                    request.form['addr'])
+                    request.form['value'])
 
             db.session.add(student)
             db.session.commit()
             flash('Record was succesfully added')
             return redirect(url_for('home'))
-    return render_template('index.html', students=students.query.all())
+    """
+    return render_template('index.html', evaluations=evaluations.query.all())
 
 
 if __name__ == '__main__':

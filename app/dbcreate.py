@@ -1,13 +1,11 @@
-from app import db, students
+from app import db, evaluations
 
 db.create_all()
 
 
-test_rec = students(
+test_rec = evaluations(
         'Marco Hemken',
-        'Los Angeles',
-        '123 Foobar Ave',
-        '12345'
+        'Los Angeles'
         )
 
 

@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PCI Leadership Evaluation</title>
+  <style>
+    #header {background-color: #094183;}
+    div.dark { color:black;font-family:calibri;}
+    body { color:white;font-family:calibri;}
+    textarea {width:400px;height:100px;float:left}
+    input, button {margin-top: 20px;margin-bottom:20px;}
+    .draggable { width: 350px;  padding: 0.1em; font-size: 12px;  background-color: #5e93b3;}
+    .droppable { border-radius: 4px; width: 450px; height: 350px; padding: 0.5em; float: left; margin: 10px; background-color:#094183;}
+  </style>
+  <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+  <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <script>
+    function run_final_report(){
+
+        list_of_draggables = $('.draggable');
+        json_export_array = new Array();
+        for (var counter = 0, len = list_of_draggables.length; counter < len; counter++) {
+            draggable =$(list_of_draggables[counter]) ;
+            droppable_div = draggable.parents('.droppable');
+            name = draggable.children('span').html();
+            raw_id = draggable.attr('id');
+            id = raw_id.replace('draggable','');
+            urgent_important = $(droppable_div).attr('data-urgent-important');
+            if (urgent_important != undefined){
+                temp = urgent_important.split('::');
+                urgent = temp[0];
+                important = temp[1];
+                
+                task = new Object();
+                task.id = id;
+                task.name = name;
+                task.urgency = urgent;
+                task.importance = important;
+
+                json_export_array.push(task);
+            } 
+        }
+
+        json_export = JSON.stringify(json_export_array);
+
+
+        $('#set_json').val(json_export);
+
+    }
+
+    function setup_droppable_boxes(urgent_levels,important_levels){
+
+        levels = new Array(); 
+        levels[0] = 'Undefined';
+        levels[1] = 'Quality and Impact';
+        levels[2] = 'Engagement';
+        levels[3] = 'Activity';
+
+        top_columns = new Array(); 
+	top_columns[0] = 'Undefined'; 
+	top_columns[1] = 'Academic-led'; 
+	top_columns[2] = 'Use of Resources'; 
+	top_columns[3] = 'Visibility'; 
+
+
+        for (var counter_urgent = urgent_levels, len = 0; counter_urgent > len; counter_urgent--) {
+            for (var counter_importance = 0, len_important = important_levels; counter_importance < len_important; counter_importance++) {
+                name= 'Dimension:' + levels[counter_urgent] + ' Domain:' + top_columns[(counter_importance+1)];
+                new_div = '<div data-urgent-important="'+counter_urgent+'::'+(counter_importance+1)+'" id="droppable'+name+'" class="droppable ui-widget-header"> <p>'+name+'</p><ul></ul> </div>';
+                
+                $('#blocks').append(new_div);
+            }
+            $('#blocks').append('<div style="clear:both"></div>');
+        }
+
+
+
+    }
+
+    function set_tasks_from_json(){
+        all_tasks_json =$('#set_json').val();
+        all_tasks = JSON.parse(all_tasks_json) 
+        for (var counter = 0, len = all_tasks.length; counter < len; counter++) {
+            name= all_tasks[counter].name;
+            id= all_tasks[counter].id;
+            importance = all_tasks[counter].importance;
+            urgency = all_tasks[counter].urgency;
+            new_li = create_new_li(id,name);
+            $('[data-urgent-important="'+urgency+'::'+importance+'"]').find("ul").append(new_li);
+            
+        }
+
+    }
+
+
+    function create_new_li(new_id,name){
+        agile_org_html = '';
+        delete_html = '<a class="delete" href="#!">[X]</a>';
+        new_li = '<li id="'+new_id+'" class="draggable"><span>'+name+'</span> '+ agile_org_html +' ' + delete_html + ' </li>';
+        return new_li;
+    }
+
+    function setup_new_li_triggers(){
+        $( ".draggable" ).draggable();
+        delete_li_trigger();
+    }
+
+
+    function delete_li_trigger(){
+        $("a.delete").click(function(){
+            $(this).parent().remove();
+        });
+    }
+
+
+    function make_divs_droppable(){
+        $( ".droppable" ).droppable({
+          drop: function( event, ui ) {
+
+            id = ui.draggable.attr('id');
+            name = ui.draggable.children('span').html();
+
+            new_li = create_new_li(id,name);
+            ui.draggable.remove();
+
+            $( this ).find( "ul" ).append(new_li);
+            setup_new_li_triggers();
+          }
+        });
+    }
+    
+    function setup_click_to_redraw_using_json(){
+        $('#reset_json').click(function(){
+            $( ".draggable" ).remove();
+            set_tasks_from_json();
+            setup_new_li_triggers();
+        });
+
+    }
+
+    function clear_all(){
+        
+        $('#set_json').val('');
+        $( ".draggable" ).remove();
+        set_tasks_from_json();
+        setup_new_li_triggers();
+    }
+
+
+    function setup_click_for_add_new_task(){
+
+        $('#add_new_li').click(function(){
+            
+            new_id = $('#new_id').val();
+            new_name = $('#new_name').val();
+
+            new_li = create_new_li(new_id,new_name);
+            $('#ul_for_new_li').append(new_li);
+            
+            $('#new_id').val('');
+            $('#new_name').val('');
+            setup_new_li_triggers();
+
+        });
+    }
+
+    function bulk_create_new_lists(){
+
+        temp_text = $('#bulk_new_lists').val();
+        temp_array = temp_text.split('\n');
+
+        for (var counter = 0, len = temp_array.length; counter < len; counter++) {
+            new_name = temp_array[counter];
+            if (new_name != ''){
+                new_id = '';
+                new_li = create_new_li(new_id,new_name);
+                $('#ul_for_new_li').append(new_li);
+                
+            }
+        }
+
+        setup_new_li_triggers();
+
+    }
+
+    $(document).ready(function(){
+
+        $('#final_report').click(function(){
+            run_final_report();
+        });
+
+        urgent_levels  = 3;
+        important_levels = 3;
+        setup_droppable_boxes(urgent_levels,important_levels);
+
+        set_tasks_from_json();
+
+        setup_new_li_triggers();
+        make_divs_droppable();
+        setup_click_to_redraw_using_json();
+
+        setup_click_for_add_new_task();
+
+        $('#bulk_create_new_lists').click(function(){
+            bulk_create_new_lists();
+        });
+
+        $('#clear_all').click(function(){
+            clear_all();
+        });
+
+
+  } );
+  </script>
+</head>
+<body>
+
+	<div id="header" style="width:auto; height:150px;"><img style="height:150px;float:left;" src="https://brandhub.unimelb.edu.au/guidelines/logos/04_Logo_Vertical-Housed.jpg"> <span style="line-height:150px;font-size:40px;margin-left: 80px;" id="title">PCI Leadership Evaluation</span></div>
+<div style="clear:both"></div>
+
+<textarea style="margin-top:40px;" id="bulk_new_lists" placeholder="Put tasks on different lines">
+</textarea>
+<div style="clear:both"></div>
+<button id="bulk_create_new_lists">Bulk Create New Lists</button>
+<div style="clear:both"></div>
+
+<div id="text_for_pci_eval" class="dark">
+	<ul>
+		<li>Academic-led claim: The Leadership Team of the PCI drives the overall Initiative in ways that align with academic values, expectations and culture</li>
+		<li>Use of Resources claim: The Leadership Team of the PCI utilizes technical, human and academic resources in ways that are value-for-money, sustainable and accountable. </li>
+		<li>Visibility claim: The Leadership Team of the PCI communicates its plans, deliverables and outcomes across a range of stakeholders in ways that ensure visibility, recognition and transferability. </li>
+	</ul>
+</div>
+<div style="clear:both"></div>
+
+
+<ul id="ul_for_new_li"></ul>
+<div style="clear:both"></div>
+<div id="blocks"> </div> 
+
+<!-- from https://jqueryui.com/droppable/#default -->
+<div style="clear:both"></div>
+
+<div class="dark"> This is the report in JSON so you can back it up and restore</div>
+
+<textarea id="set_json">
+[{"id":"undefined","name":"Provided visualisations of archetypes for some faculties","urgency":"3","importance":"1"},{"id":"","name":"Synthesised LSCeg needs in one document","urgency":"3","importance":"1"},{"id":"","name":"Organised bibliograph of Definitive Documents similar to papers and citations","urgency":"3","importance":"1"},{"id":"","name":"Asked for strategic plans from ADRs of each faculty","urgency":"3","importance":"1"},{"id":"","name":"Setup Gantt chart for rest of PCI project","urgency":"3","importance":"1"},{"id":"","name":"Faculty Primers","urgency":"3","importance":"1"},{"id":"","name":"Recommended focus on non-STEM faculties","urgency":"3","importance":"1"},{"id":"","name":"Documented sign off processes ","urgency":"3","importance":"1"},{"id":"undefined","name":"Suggested we take into account unconcious bias at recruiting On Rampers","urgency":"3","importance":"1"},{"id":"undefined","name":"Wrote documentation comparing LSCeg priorities to CAV v0.6 document","urgency":"3","importance":"2"},{"id":"","name":"Documented current access options for researchers and highlighted other ways to improve engagement with CoEs","urgency":"3","importance":"2"},{"id":"","name":"Wrote up discussion document on why translators should be targeted first for On Ramp","urgency":"3","importance":"2"},{"id":"","name":"Suggested student internship as a starting point for MCRIP and internal use","urgency":"3","importance":"2"},{"id":"","name":"Petition software for gathering researcher feedback","urgency":"3","importance":"2"},{"id":"","name":"Did review of MCRIP facilities and wrote an internal report","urgency":"3","importance":"2"},{"id":"undefined","name":"Wrote a framework for PCI Leadership Evaluation","urgency":"3","importance":"2"},{"id":"","name":"Wrote the Senior Academic Convenor's report to the PCI committee which was a status report.","urgency":"3","importance":"3"},{"id":"","name":"Wrote discussion slides around Engagenment","urgency":"3","importance":"3"},{"id":"","name":"Wrote up researcher capabilities document to map service roadmap activities into research language","urgency":"3","importance":"3"},{"id":"","name":"Setup of Expectations document for researcher engagement","urgency":"3","importance":"3"},{"id":"","name":"Helped with suggestions ABACBS BioIT meeting ","urgency":"3","importance":"3"},{"id":"","name":"Highlighted lack of consistency with engagement/ToR of expert groups","urgency":"2","importance":"1"},{"id":"","name":"Highlighted lack of academics on RDM","urgency":"2","importance":"1"},{"id":"","name":"Digitisation at Scale Expert Group","urgency":"2","importance":"1"},{"id":"","name":"Shared access priority document with relevant parties like US EAs","urgency":"2","importance":"2"},{"id":"undefined","name":"Helped US engage with researchers around HPC/Storage review","urgency":"2","importance":"2"},{"id":"","name":"Donna Hensler Short File Archive","urgency":"2","importance":"2"},{"id":"","name":"LIEF workshop data management suggestions","urgency":"2","importance":"2"},{"id":"","name":"Discussed with Jaye Weatherburn Data Steward Co-ordinator","urgency":"2","importance":"2"},{"id":"","name":"Shared synthesis of LSCeg document with LSCeg","urgency":"2","importance":"3"},{"id":"","name":"Met with academics/third spacers who asked about PCI proactively","urgency":"2","importance":"3"},{"id":"undefined","name":"Met with most MCRIP platforms to understand high level data and compute needs","urgency":"2","importance":"3"},{"id":"","name":"Worked on understanding high level research needs for non-STEM faculties like Education, Law, ABP, FBE, Arts and Fine Arts and Music","urgency":"2","importance":"3"},{"id":"","name":"40+ engagements at the meso level across multiple faculties including ABP, FBE, Eng, Sci, MDHS, FVAS and FAM and Peter Mac, MIG and MNC, Portable Pipeline project, Mike Clark","urgency":"2","importance":"3"},{"id":"","name":"Represented UniMelb at eResearch Australasia","urgency":"2","importance":"3"},{"id":"","name":"Represented UniMelb in RSE community","urgency":"2","importance":"3"},{"id":"","name":"Represented UniMelb in FAVeR community","urgency":"2","importance":"3"},{"id":"","name":"Suggested that the PCI Infrastructure and Services meeting be held at RIC / SS","urgency":"2","importance":"3"},{"id":"","name":"Organised a faculty IT sysadmin catchup","urgency":"2","importance":"3"},{"id":"","name":"Organised lunch for software engineers","urgency":"2","importance":"3"},{"id":"undefined","name":"Good feedback from PCI team around visualisation of archetypes","urgency":"1","importance":"1"},{"id":"","name":"Excellent feedback from MCRIP platform manager in helping to bridge gap between them and US in change management situation","urgency":"1","importance":"1"},{"id":"","name":"Flagged issue with budget calculations","urgency":"1","importance":"1"},{"id":"","name":"Good feedback for access priority discussion document from PCI project team and US EAs","urgency":"1","importance":"2"},{"id":"","name":"It was agreed that the first On Rampers should be translators","urgency":"1","importance":"2"},{"id":"","name":"Provided helpful suggestions for Dr Tom Daly around DEM-DEC","urgency":"1","importance":"2"},{"id":"","name":"No major negative feedback of synthesis of LSCeg from the LSCeg","urgency":"1","importance":"3"},{"id":"","name":"Provided suggestions for members of the DRP","urgency":"1","importance":"3"},{"id":"","name":"Linked up multiple researchers with services around the University. eg. Tom Daly and Richard Sinnott","urgency":"1","importance":"3"}]
+</textarea> 
+<div style="clear:both"></div>
+<button id="clear_all">Clear All</button>
+<button id="reset_json">Reset JSON </button>
+<button id="final_report">Final Report</button>
+<div style="clear:both"></div>
+ 
+</body>
+</html>

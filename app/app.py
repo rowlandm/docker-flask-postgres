@@ -65,7 +65,7 @@ def home():
             db.session.commit()
             flash('Record was succesfully added')
             return redirect(url_for('home'))
-    return render_template('show_all.html', students=students.query.all())
+    return render_template('index.html', students=students.query.all())
 
 
 if __name__ == '__main__':

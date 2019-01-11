@@ -75,7 +75,7 @@ def view():
             evaluation.value = request.form['value']
             db.session.commit()
             flash('Record was succesfully updated')
-            return redirect(url_for('home'))
+            return redirect(url_for('view',id=evaluation_id))
     if request.method == 'GET':
         evaluation_id = request.args['id']
     return render_template('view.html', evaluation=evaluations.query.filter_by(id=evaluation_id).first())

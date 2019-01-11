@@ -63,6 +63,22 @@ def home():
             return redirect(url_for('home'))
     return render_template('index.html', evaluations=evaluations.query.all())
 
+@app.route('/new', methods=['POST'])
+def new():
+    if request.method == 'POST':
+        if not request.form['name']:
+            flash('Please enter all the fields', 'error')
+        else:
+            evaluation = evaluations(
+                    request.form['name'],
+                    '[]') # Need this to be valid json so it doesn't break the javascript
+
+            db.session.add(evaluation)
+            db.session.commit()
+            flash('Record was succesfully added')
+            return redirect(url_for('home'))
+    return render_template('index.html', evaluations=evaluations.query.all())
+
 @app.route('/view', methods=['GET', 'POST'])
 def view():
     if request.method == 'POST':

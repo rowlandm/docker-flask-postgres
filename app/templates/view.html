@@ -8,7 +8,7 @@
     #header {background-color: #094183;}
     div.dark { color:black;font-family:calibri;}
     body { color:white;font-family:calibri;}
-    textarea {width:400px;height:100px;float:left}
+    textarea {width:400px;height:100px;float:left; display:none;}
     input, button {margin-top: 20px;margin-bottom:20px;}
     .draggable { width: 350px;  padding: 0.1em; font-size: 12px;  background-color: #5e93b3;}
     .droppable { border-radius: 4px; width: 450px; height: 350px; padding: 0.5em; float: left; margin: 10px; background-color:#094183;}
@@ -46,7 +46,7 @@
 
 
         $('#set_json').val(json_export);
-
+	$('#save_form').submit();
     }
 
     function setup_droppable_boxes(urgent_levels,important_levels){
@@ -185,7 +185,6 @@
     }
 
     $(document).ready(function(){
-
         $('#final_report').click(function(){
             run_final_report();
         });
@@ -202,6 +201,7 @@
 
         setup_click_for_add_new_task();
 
+
         $('#bulk_create_new_lists').click(function(){
             bulk_create_new_lists();
         });
@@ -216,7 +216,7 @@
 </head>
 <body>
 
-	<div id="header" style="width:auto; height:150px;"><img style="height:150px;float:left;" src="https://brandhub.unimelb.edu.au/guidelines/logos/04_Logo_Vertical-Housed.jpg"> <span style="line-height:150px;font-size:40px;margin-left: 80px;" id="title"> {{ evaluation.name }} - PCI Leadership Evaluation</span></div>
+	<div id="header" style="width:auto; height:150px;"><a href="/"><img style="height:150px;float:left;" src="https://brandhub.unimelb.edu.au/guidelines/logos/04_Logo_Vertical-Housed.jpg"></a> <span style="line-height:150px;font-size:40px;margin-left: 80px;" id="title"> {{ evaluation.name }} - PCI Leadership Evaluation</span></div>
 <div style="clear:both"></div>
 
 <textarea style="margin-top:40px;" id="bulk_new_lists" placeholder="Put tasks on different lines">
@@ -249,13 +249,13 @@
 <button id="reset_json">Reset JSON </button>
 <button id="final_report">Final Report</button>
 
-<form action="{{ request.path }}" method="post">
-    ID:<br> <input type="text" name="id" value="{{ evaluation.id }}"><br>
+<form id="save_form" action="{{ request.path }}" method="post">
+    ID:<br> <input type="hidden" name="id" value="{{ evaluation.id }}"><br>
     Name:<br> <input type="text" name="name" value="{{ evaluation.name }}"><br>
     <textarea id="set_json" name="value">
 {{ evaluation.value }}
     </textarea> 
-    <input type="submit" value="Submit">
+    <input style="display:none;" type="submit" value="Submit">
 </form>
 
 

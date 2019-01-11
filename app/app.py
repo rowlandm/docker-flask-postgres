@@ -53,11 +53,11 @@ def home():
         if not request.form['name'] or not request.form['value']:
             flash('Please enter all the fields', 'error')
         else:
-            student = evaluations(
+            evaluation = evaluations(
                     request.form['name'],
                     request.form['value'])
 
-            db.session.add(student)
+            db.session.add(evaluation)
             db.session.commit()
             flash('Record was succesfully added')
             return redirect(url_for('home'))
@@ -65,9 +65,20 @@ def home():
 
 @app.route('/view', methods=['GET', 'POST'])
 def view():
-    evaluation_id = request.args['id']
-
-    return render_template('view.html', evaluations=evaluations.query.filter_by(id=evaluation_id))
+    if request.method == 'POST':
+        if not request.form['name'] or not request.form['value'] or not request.form['id']:
+            flash('Please enter all the fields', 'error')
+        else:
+            evaluation_id = request.form['id']
+            evaluation = evaluations.query.filter_by(id=evaluation_id).first()
+            evaluation.name = request.form['name']
+            evaluation.value = request.form['value']
+            db.session.commit()
+            flash('Record was succesfully updated')
+            return redirect(url_for('home'))
+    if request.method == 'GET':
+        evaluation_id = request.args['id']
+    return render_template('view.html', evaluation=evaluations.query.filter_by(id=evaluation_id).first())
 
 
 

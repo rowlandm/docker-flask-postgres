@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-	    <title>View - {{ evaluations[0].name }} PCI Leadership Evaluation</title>
+	    <title>View - {{ evaluation.name }} PCI Leadership Evaluation</title>
   <style>
     #header {background-color: #094183;}
     div.dark { color:black;font-family:calibri;}
@@ -216,7 +216,7 @@
 </head>
 <body>
 
-	<div id="header" style="width:auto; height:150px;"><img style="height:150px;float:left;" src="https://brandhub.unimelb.edu.au/guidelines/logos/04_Logo_Vertical-Housed.jpg"> <span style="line-height:150px;font-size:40px;margin-left: 80px;" id="title"> {{ evaluations[0].name }} - PCI Leadership Evaluation</span></div>
+	<div id="header" style="width:auto; height:150px;"><img style="height:150px;float:left;" src="https://brandhub.unimelb.edu.au/guidelines/logos/04_Logo_Vertical-Housed.jpg"> <span style="line-height:150px;font-size:40px;margin-left: 80px;" id="title"> {{ evaluation.name }} - PCI Leadership Evaluation</span></div>
 <div style="clear:both"></div>
 
 <textarea style="margin-top:40px;" id="bulk_new_lists" placeholder="Put tasks on different lines">
@@ -248,14 +248,17 @@
 <button id="clear_all">Clear All</button>
 <button id="reset_json">Reset JSON </button>
 <button id="final_report">Final Report</button>
+
 <form action="{{ request.path }}" method="post">
-    Name:<br>
-    <input type="text" name="name"><br>
-<textarea id="set_json" name="value">
-{{ evaluations[0].value }}
-</textarea> 
+    ID:<br> <input type="text" name="id" value="{{ evaluation.id }}"><br>
+    Name:<br> <input type="text" name="name" value="{{ evaluation.name }}"><br>
+    <textarea id="set_json" name="value">
+{{ evaluation.value }}
+    </textarea> 
     <input type="submit" value="Submit">
 </form>
+
+
 <div style="clear:both"></div>
 </body>
 </html>

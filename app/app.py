@@ -108,4 +108,4 @@ if __name__ == '__main__':
         else:
             dbstatus = True
     database_initialization_sequence()
-    app.run(debug=True, host='0.0.0.0') 
+    app.run(debug=True, host='0.0.0.0',threaded=True) 

@@ -65,8 +65,9 @@ def home():
 
 @app.route('/view', methods=['GET', 'POST'])
 def view():
+    evaluation_id = request.args['id']
 
-    return render_template('view.html', evaluations=evaluations.query.all())
+    return render_template('view.html', evaluations=evaluations.query.filter_by(id=evaluation_id))
 
 
 

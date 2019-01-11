@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>View - PCI Leadership Evaluation</title>
+	    <title>View - {{ evaluations[0].name }} PCI Leadership Evaluation</title>
   <style>
     #header {background-color: #094183;}
     div.dark { color:black;font-family:calibri;}
@@ -216,7 +216,7 @@
 </head>
 <body>
 
-	<div id="header" style="width:auto; height:150px;"><img style="height:150px;float:left;" src="https://brandhub.unimelb.edu.au/guidelines/logos/04_Logo_Vertical-Housed.jpg"> <span style="line-height:150px;font-size:40px;margin-left: 80px;" id="title">PCI Leadership Evaluation</span></div>
+	<div id="header" style="width:auto; height:150px;"><img style="height:150px;float:left;" src="https://brandhub.unimelb.edu.au/guidelines/logos/04_Logo_Vertical-Housed.jpg"> <span style="line-height:150px;font-size:40px;margin-left: 80px;" id="title"> {{ evaluations[0].name }} - PCI Leadership Evaluation</span></div>
 <div style="clear:both"></div>
 
 <textarea style="margin-top:40px;" id="bulk_new_lists" placeholder="Put tasks on different lines">

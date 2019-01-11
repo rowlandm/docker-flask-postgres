@@ -9,6 +9,7 @@
     div.dark { color:black;font-family:calibri;}
     body { color:white;font-family:calibri;}
     textarea {width:400px;height:100px;float:left}
+    table {color: black;}
     input, button {margin-top: 20px;margin-bottom:20px;}
     .draggable { width: 350px;  padding: 0.1em; font-size: 12px;  background-color: #5e93b3;}
     .droppable { border-radius: 4px; width: 450px; height: 350px; padding: 0.5em; float: left; margin: 10px; background-color:#094183;}
@@ -20,9 +21,15 @@
 
 	<div id="header" style="width:auto; height:150px;"><img style="height:150px;float:left;" src="https://brandhub.unimelb.edu.au/guidelines/logos/04_Logo_Vertical-Housed.jpg"> <span style="line-height:150px;font-size:40px;margin-left: 80px;" id="title">PCI Leadership Evaluation</span></div>
 <div style="clear:both"></div>
-
-
-
+	<table>
+	    {% for evaluation in evaluations %}
+		<tr>
+		    <td>{{ evaluation.id }}</td>
+		    <td>{{ evaluation.name }}</td>
+		    <td><a href ="/view?id={{ evaluation.id }}">Link</a></td>
+		</tr>
+	    {% endfor %}
+	</table>
 
 <div style="clear:both"></div>
 </body>

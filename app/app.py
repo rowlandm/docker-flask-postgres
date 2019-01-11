@@ -29,7 +29,7 @@ db = SQLAlchemy(app)
 class evaluations(db.Model):
     id = db.Column('student_id', db.Integer, primary_key=True)
     name = db.Column(db.String(100))
-    value = db.Column(db.String(500))
+    value = db.Column(db.Text())
 
     def __init__(self, name, value):
         self.name = name
@@ -49,7 +49,6 @@ def database_initialization_sequence():
 
 @app.route('/', methods=['GET', 'POST'])
 def home():
-    """
     if request.method == 'POST':
         if not request.form['name'] or not request.form['value']:
             flash('Please enter all the fields', 'error')
@@ -62,8 +61,13 @@ def home():
             db.session.commit()
             flash('Record was succesfully added')
             return redirect(url_for('home'))
-    """
     return render_template('index.html', evaluations=evaluations.query.all())
+
+@app.route('/view', methods=['GET', 'POST'])
+def view():
+
+    return render_template('view.html', evaluations=evaluations.query.all())
+
 
 
 if __name__ == '__main__':
@@ -76,4 +80,4 @@ if __name__ == '__main__':
         else:
             dbstatus = True
     database_initialization_sequence()
-    app.run(debug=True, host='0.0.0.0')
+    app.run(debug=True, host='0.0.0.0') 
